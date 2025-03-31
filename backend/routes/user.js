@@ -7,6 +7,7 @@ import SingleUpload from '../middleware/multer.js';
 // user routes 
 router.post("/register" , SingleUpload, UserController.register);
 router.post("/login" , UserController.login);
-router.post("/updateprofile", isAuthenticated, UserController.updateProfile);
+router.post("/updateprofile", SingleUpload([{ name: "file", maxCount: 1 },
+    { name: "coverPicture", maxCount: 1 },{ name: "profilePicture", maxCount: 1 }]), isAuthenticated, UserController.updateProfile);
 router.post("/logout" , UserController.logout);
 export default router; 

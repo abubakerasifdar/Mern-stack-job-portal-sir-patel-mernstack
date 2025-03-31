@@ -19,13 +19,14 @@ export default function Home() {
       <Navbar />
       <Hero2 />
       <IndustoryCategory />
+      <Featruejobs />
       <LatestJobs />
       <Category />
       <Partner />
       <Companies />
       <CTA />
       <Companycategory />
-      <Featruejobs />
+     
       <Footer />
     </>
   );

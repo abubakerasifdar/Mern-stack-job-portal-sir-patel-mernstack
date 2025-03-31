@@ -3,6 +3,9 @@ dotenv.config();
 import UserModel from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getUrlData from "./../utils/getDataUri.js";
+import cloudinary from "./../utils/cloudinary.js";
+import cloudinaryuploadFilesParallel from "./../utils/cloudinaryMultiUploads.js";
 
 class UserController {
   // controller for registering the user
@@ -15,7 +18,7 @@ class UserController {
 
       const { fullName, email, phoneNumber, password, role } = req.body;
       const file = req.file;
-      
+
       console.log("\nExtracted Fields:");
       console.log("fullName:", fullName);
       console.log("email:", email);
@@ -61,7 +64,6 @@ class UserController {
         message: "User registered successfully",
         success: true,
       });
-
     } catch (error) {
       console.log("\n=== REGISTER ERROR ===");
       console.error("Error:", error);
@@ -112,7 +114,12 @@ class UserController {
       }
 
       if (role !== user.role) {
-        console.log("Role mismatch. User role:", user.role, "Requested role:", role);
+        console.log(
+          "Role mismatch. User role:",
+          user.role,
+          "Requested role:",
+          role
+        );
         return res.status(400).json({
           message: "User does not exist with this role",
           success: false,
@@ -148,7 +155,6 @@ class UserController {
           user: userData,
           success: true,
         });
-
     } catch (error) {
       console.log("\n=== LOGIN ERROR ===");
       console.error("Error:", error);
@@ -170,7 +176,6 @@ class UserController {
         message: "User logged out successfully",
         success: true,
       });
-
     } catch (error) {
       console.log("\n=== LOGOUT ERROR ===");
       console.error("Error:", error);
@@ -185,27 +190,24 @@ class UserController {
   static updateProfile = async (req, res) => {
     try {
       console.log("\n=== UPDATE PROFILE REQUEST STARTED ===");
-      console.log("Request Body:", req.body);
-      console.log("Request File:", req.file);
-      console.log("Authenticated User ID:", req.id);
-
-      const { fullName, email, phoneNumber, bio, skills } = req.body;
-      const file = req.file;
-      
-      console.log("\nExtracted Fields:");
-      console.log("fullName:", fullName);
-      console.log("email:", email);
-      console.log("phoneNumber:", phoneNumber);
-      console.log("bio:", bio);
-      console.log("skills:", skills);
-      console.log("file:", file);
-
+     const { fullName, email, phoneNumber, bio, skills, location } = req.body;
+      const file = req.files.file?.originalname?.[0];
+      const files = req.files.file?.[0];
+      const coverPicture = req.files?.coverPicture?.[0];
+      const profilePicture = req.files?.coverPicture?.[0];
+      const fileuri = getUrlData(files);
+      const coverPictureuri = getUrlData(coverPicture);
+      const profilePictureuri = getUrlData(profilePicture);
+      const cloudinaryResponses = await cloudinaryuploadFilesParallel([
+        fileuri,
+        coverPictureuri,
+        profilePictureuri,
+      ]);
+   // cloudinary usage is herer
       let skillsArray;
       if (skills) {
         skillsArray = skills.split(",");
-        console.log("Skills array:", skillsArray);
       }
-
       console.log("\nFinding user in database...");
       const user = await UserModel.findById(req.id);
       if (!user) {
@@ -215,14 +217,39 @@ class UserController {
           success: false,
         });
       }
-
-      console.log("\nUpdating user fields...");
+       console.log("\nUpdating user fields...");
       if (fullName) user.fullName = fullName;
       if (email) user.email = email;
       if (phoneNumber) user.phoneNumber = phoneNumber;
       if (bio) user.profile.bio = bio;
+      if (location) user.profile.location = location;
       if (skills) user.profile.skills = skillsArray;
-      // Note: File handling for profile picture would go here
+      if (file) user.profile.fileOriginalName = file;
+      if (files) user.profile.file = cloudinaryResponses[0]?.secure_url;
+      if (coverPicture)
+        user.profile.coverPicture =
+          cloudinaryResponses[1]?.secure_url;
+      if (profilePicture)
+        user.profile.profilePicture = cloudinaryResponses[2]?.secure_url;
+      // if (files && cloudinaryResponses?.files) {
+      //   user.profile.file = cloudinaryResponses?.files?.secure_url;
+      //   console.log(user.profile.file);
+      //   console.log(cloudinaryResponses?.files?.secure_url);
+      //   console.log('Cover picture URL:', cloudinaryResponses?.coverPicture?.secure_url);
+      // }
+      // if (coverPicture && cloudinaryResponses?.coverPicture) {
+      //   user.profile.coverPicture = cloudinaryResponses?.coverPicture?.secure_url;
+      //   console.log(user.profile.coverPicture);
+      //   console.log(cloudinaryResponses?.coverPicture?.secure_url);
+      //   console.log('Cover picture URL:', cloudinaryResponses?.coverPicture?.secure_url);
+      // }
+
+      // if (profilePicture && cloudinaryResponses?.profilePicture) {
+      //   user.profile.profilePicture = cloudinaryResponses?.profilePicture?.secure_url;
+      //   console.log(user.profile.profilePicture);
+      //   console.log(cloudinaryResponses?.profilePicture?.secure_url);
+      //   console.log('Profile picture URL:', cloudinaryResponses?.profilePicture?.secure_url);
+      // }
 
       console.log("\nSaving updated user...");
       await user.save();
@@ -242,7 +269,6 @@ class UserController {
         user: userData,
         success: true,
       });
-
     } catch (error) {
       console.log("\n=== UPDATE PROFILE ERROR ===");
       console.error("Error:", error);

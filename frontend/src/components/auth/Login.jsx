@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader2 } from "lucide-react";
 import {setLoading} from "../redux/slice/authslice.js"
+import {setUser} from "../redux/slice/authslice.js"
 
 
 const Login = () => {
@@ -51,9 +52,9 @@ const Login = () => {
       });
       
       if(res?.data?.success == true){
-       
+        dispatch(setUser(res.data.user))
         toast.success(res?.data?.message)
-        navigate('/')
+        navigate('/user/profile')
       }
        
       

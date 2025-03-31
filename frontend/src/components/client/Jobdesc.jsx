@@ -2,6 +2,7 @@ import React from "react";
 import { Img } from "react-image";
 import Navbar from "@/components/shared/Navbar";
 export default function Jobdesc() {
+  const isApplied = false;
   return (
     <div>
       <Navbar />
@@ -20,20 +21,20 @@ export default function Jobdesc() {
               </ul>
             </div>
             {/* strip section  */}
-            <div className="bg-white flex mt-10 lg:flex-row flex-col   lg:justify-between items-start lg:items-center  p-3    ">
+            <div className="bg-white w-full lg:w-auto flex mt-10 lg:flex-row flex-col   lg:justify-between items-start lg:items-center  p-3    ">
               {/* images section  */}
-              <div className="flex    flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-4 ">
-              <Img
-              className=""
-              src="\images\Compnay profile landing pages\Stripe Images Section\stripe_logo_Dp4F5YyKm 1.png"
-              width={64}
-              height={64}
-            />
-              
+              <div className="flex  w-full  flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-4 ">
+                <Img
+                  className="hidden lg:flex"
+                  src="\images\Compnay profile landing pages\Stripe Images Section\stripe_logo_Dp4F5YyKm 1.png"
+                  width={64}
+                  height={64}
+                />
+
                 <div className="flex lg:w-0 w-full flex-row   justify-between">
                   <Img
-                    className=" "
-                    src="/images/compnay profile landing pages/Stripe Images Section/stripe_logo_Dp4F5YyKm 1.png"
+                    className=" lg:hidden"
+                    src="\images\Compnay profile landing pages\Stripe Images Section\stripe_logo_Dp4F5YyKm 1.png"
                     width={80}
                     height={80}
                     alt="testing"
@@ -59,19 +60,22 @@ export default function Jobdesc() {
               </div>
 
               {/* Third layers */}
-              <div className="flex  lg:w-auto w-full lg:flex-row flex-col gap-4 ">
+              <div className="flex justify-end  w-full lg:flex-row flex-col gap-4 ">
                 {/* 1 */}
 
                 <Img
                   src="/images/SVG-Icons/Name=Share.svg"
                   width={32}
                   height={32}
-                  className="hidden lg:flex lg:basis-1/4"
+                  className="hidden lg:flex "
                 />
 
-                <h1 className=" lg:flex lg:basis-3/4 w-full  px-6 py-3  bg-[#4640DE] text-white font-bold  text-center">
-                  Apply
-                </h1>
+<button 
+  className={`lg:flex px-6 py-3 ${isApplied ? 'bg-gray-600' : 'bg-[#4640DE]'} text-white font-bold text-center`}
+  disabled={isApplied}
+>
+  {isApplied ? "Already Applied" : "Apply Now"}
+</button>
               </div>
             </div>
           </div>
@@ -317,7 +321,6 @@ export default function Jobdesc() {
         </div>
       </div>
       <hr />
-
       {/* Perks and Benefits Sections  */}
       <div className="container space-y-5 mx-auto mb-5  p-10">
         <div className="flex flex-col space-y-5 items-start justify-start  ">

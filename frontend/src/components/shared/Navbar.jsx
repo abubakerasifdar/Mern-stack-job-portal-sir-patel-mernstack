@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { useSelector } from "react-redux";
+import setUser from "../redux/slice/authslice";
 const Navbar = () => {
+  const { user } = useSelector((store) => store.auth);
   const [isLogin, setisLogin] = useState(true);
   const navigate = useNavigate();
   const handlelogout = async (e) => {
@@ -41,12 +43,7 @@ const Navbar = () => {
         <div className=" text-black flex justify-between items-center  h-[78px] bg-white container mx-auto px-10">
           {/* this is for logo */}
           <div className="flex space-x-3">
-          <Img
-              src="/Logo.png"
-              width={160}
-              height={36}
-              alt="Logo"
-            />
+            <Img src="/Logo.png" width={160} height={36} alt="Logo" />
           </div>
           {/* mobile view toggle */}
           <div className="md:hidden flex">images</div>
@@ -55,47 +52,34 @@ const Navbar = () => {
           <div className=" hidden md:flex ">
             <ul className="flex space-x-5 ">
               <li>
+                <a href="/" className="hover:border-b-2 border-[#4640DE]">
+                  Home
+                </a>
+              </li>
+              <li>
                 <a
-                  href="/client/findjobs"
+                  href="/findjob"
                   className="hover:border-b-2 border-[#4640DE]"
                 >
                   Find Job
                 </a>
               </li>
+
               <li>
-                <a
-                  href="/client/browsecompanies"
-                  className="hover:border-b-2 border-[#4640DE]"
-                >
+                <a href="/browse" className="hover:border-b-2 border-[#4640DE]">
                   Browse Companies
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/client/contact-us"
-                  className="hover:border-b-2 border-[#4640DE]"
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/client/about"
-                  className="hover:border-b-2 border-[#4640DE]"
-                >
-                  About Us
                 </a>
               </li>
             </ul>
           </div>
           {/* This is for auth */}
           <div className="hidden md:flex items-center  space-x-5">
-            {isLogin ? (
+            {user ? (
               <Popover>
                 <PopoverTrigger asChild>
                   <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src={user?.profile?.profilePhoto} />
+                    <AvatarFallback>Profile Picture</AvatarFallback>
                   </Avatar>
                 </PopoverTrigger>
                 <PopoverContent className="bg-white w-90 text-dark mt-7 me-4 border-0 shadow-gray-400">
@@ -120,10 +104,10 @@ const Navbar = () => {
                     <hr className="lg:hidden" />
                     <li className="flex justify-around items-center">
                       <a
-                        href="/client/about"
+                        href="/profile"
                         className="hover:border-b-2 border-[#4640DE]"
                       >
-                        Settings
+                        My Profile
                       </a>
                       <a
                         onClick={handlelogout}
@@ -138,10 +122,10 @@ const Navbar = () => {
             ) : (
               <>
                 <h1 className="bg-[#4640DE] px-3 py-2  font-bold rounded-sm hover:text-[#4640DE] hover:bg-white text-white">
-                  <a href="/account/login">Login </a>
+                  <a href="/login">Login </a>
                 </h1>
                 <h1 className="bg-[#4640DE] hover:text-[#4640DE] hover:bg-white  px-3 py-2  font-bold rounded-sm text-white">
-                  <a href="/account/register">Register</a>
+                  <a href="/register">Register</a>
                 </h1>
               </>
             )}

@@ -14,11 +14,14 @@ const UserSchema = new mongoose.Schema(
     profile: {
       bio: { type: String },
       skills: [{ type: String }],
-      resume: { type: String }, // url of string
-      resumeOriginalName: { type: String },
+      file: { type: String }, // url of string
+      fileOriginalName: { type: String },
       company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
       profilePicture: { type: String, default: "" },
+      location:{type:String},
+      coverPicture:{type:String, default:""}
     },
+
   },
   { timestamps: true }
 );

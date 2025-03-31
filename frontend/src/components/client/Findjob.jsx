@@ -49,7 +49,7 @@ export default function Findjob() {
   return (
     <div>
       <Navbar />
-
+      <Hero2 />
       {/*  mobile view filter section ended  */}
       {/* 1 hero section ended  */}
       {/* responsiveness left for filter  */}

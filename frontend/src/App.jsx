@@ -7,6 +7,8 @@ import Home from "@/components/Home"
 import Findjob from './components/client/Findjob';
 import Jobdesc from './components/client/Jobdesc';
 import Front from './components/client/Front';
+import UserPublicProfile from './components/client/UserPublicProfile';
+import Profile from './components/user/Profile';
 
 
 
@@ -27,8 +29,16 @@ const appRouter = createBrowserRouter([
     element:<Findjob />
   },
   {
-    path:"/jobdesc",
+    path:"/jobdesc/:id",
     element:<Jobdesc />
+  },
+  {
+    path:"/profile",
+    element:<UserPublicProfile />
+  },
+  {
+    path:"user/profile",
+    element:<Profile />
   }
   
 ]);
