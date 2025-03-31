@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button"
 import Login from "@/components/auth/Login"
 import Register from "@/components/auth/Register"
 import Home from "@/components/Home"
+import Findjob from './components/client/Findjob';
+import Jobdesc from './components/client/Jobdesc';
+import Front from './components/client/Front';
 
 
 
@@ -19,7 +22,15 @@ const appRouter = createBrowserRouter([
   {
     path:"/register",
     element:<Register />
+  },{
+    path:"/findjob",
+    element:<Findjob />
+  },
+  {
+    path:"/jobdesc",
+    element:<Jobdesc />
   }
+  
 ]);
 
 function App() {

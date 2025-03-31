@@ -4,6 +4,9 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader2 } from "lucide-react";
+import {setLoading} from "../redux/slice/authslice.js"
 
 
 const Login = () => {
@@ -14,6 +17,9 @@ const Login = () => {
     role: "recruiter",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {loading} = useSelector(store=> store.auth)
+  
 
   const handleCompany = (e) => {
     e.preventDefault();
@@ -38,6 +44,7 @@ const Login = () => {
     formData.append("password", input.password);
 
     try {
+      dispatch(setLoading(true));
       const res = await axios.post(`http://localhost:8000/api/user/login`, formData, {
         headers: { "Content-Type": "application/json"},
         withCredentials: true,
@@ -54,6 +61,8 @@ const Login = () => {
     } catch (error) {
     toast.error(error?.response?.data?.message)
       
+    } finally {
+      dispatch(setLoading(false))
     }
   };
 
@@ -121,12 +130,18 @@ const Login = () => {
                 required
               />
             </div>
-            <button
+{!loading ? ( <><button 
               type="submit"
-              className="w-full bg-indigo-500 text-white py-2 rounded"
+              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
             >
               Login as Company
-            </button>
+            </button>  </>   ) : (<><button 
+              type="submit"
+              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+            >
+              Processing...<Loader2 className="mr-2 w-4 h-4 animate-spin" />
+            </button>  </> )}
+          
           </form>
         ) : (
           <form onSubmit={submithandler} className="p-2 w-[50%] bg-white">
@@ -170,12 +185,17 @@ const Login = () => {
                 required
               />
             </div>
-            <button
+            {!loading ? ( <><button 
               type="submit"
-              className="w-full bg-indigo-500 text-white py-2 rounded"
+              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
             >
               Login as Student
-            </button>
+            </button>  </>   ) : (<><button 
+              type="submit"
+              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+            >
+              Processing...<Loader2 className="mr-2 w-4 h-4 animate-spin" />
+            </button>  </> )}
           </form>
         )}
 
