@@ -9,6 +9,7 @@ import Jobdesc from './components/client/Jobdesc';
 import Front from './components/client/Front';
 import UserPublicProfile from './components/client/UserPublicProfile';
 import Profile from './components/user/Profile';
+import Company from './components/admin/Company';
 
 
 
@@ -39,6 +40,11 @@ const appRouter = createBrowserRouter([
   {
     path:"user/profile",
     element:<Profile />
+  },
+  // admin routes 
+  {
+     path:"admin/companies",
+     element:<Company />
   }
   
 ]);
