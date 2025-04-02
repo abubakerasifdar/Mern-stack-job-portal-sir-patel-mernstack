@@ -13,9 +13,9 @@ import { Img } from "react-image";
 
 const Profilecontentsection = () => {
   const { loading } = useSelector((store) => store.auth);
-  const { user, loadings } = useSelector((store) => store.auth);
+  const { user} = useSelector((store) => store.auth);
   const dispatch = useDispatch();
-  if (loadings) return <div>working</div>;
+
 
   const isfile = true;
   const [isOpen, setIsOpen] = useState(true);
@@ -475,7 +475,7 @@ const Profilecontentsection = () => {
                   width="300px"
                   alt=""
                 />
-                image name: {user?.profile?.fileOriginalName}
+               
                 <Input
                   type="file"
                   onChange={fileChangehandler}

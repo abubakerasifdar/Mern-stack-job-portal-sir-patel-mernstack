@@ -11,8 +11,11 @@ import Companies from "./../shared/Companies";
 import Partner from './../shared/patners';
 import Companycategory from './../shared/Companycategory';
 import IndustoryCategory from './../shared/IndustoryCategory';
+import usegetAllJobs from './../hooks/usegetAllJobs';
+
 
 export default function Home() {
+  usegetAllJobs()
   return (
     // 8 section are in this pages
     <>

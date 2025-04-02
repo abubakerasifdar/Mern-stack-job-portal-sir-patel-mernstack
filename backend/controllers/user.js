@@ -14,23 +14,23 @@ class UserController {
       console.log("\n=== REGISTER REQUEST STARTED ===");
       console.log("Request Headers:", req.headers);
       console.log("Request Body:", req.body);
-      console.log("Request File:", req.file);
+     
 
       const { fullName, email, phoneNumber, password, role } = req.body;
-      const file = req.file;
+     
 
       console.log("\nExtracted Fields:");
       console.log("fullName:", fullName);
       console.log("email:", email);
       console.log("phoneNumber:", phoneNumber);
       console.log("role:", role);
-      console.log("file:", file);
+     
 
       // Validation checks
-      if (!fullName || !email || !phoneNumber || !password || !role || !file) {
+      if (!fullName || !email || !phoneNumber || !password || !role ) {
         console.log("\nValidation Failed - Missing Fields");
         return res.status(200).json({
-          message: "Some fields are missing",
+          message: "fields are missing",
           success: false,
         });
       }
@@ -56,7 +56,7 @@ class UserController {
         phoneNumber,
         password: hashpassword,
         role,
-        profilePicture: file,
+    
       });
       console.log("User created successfully:", newUser);
 
@@ -190,20 +190,31 @@ class UserController {
   static updateProfile = async (req, res) => {
     try {
       console.log("\n=== UPDATE PROFILE REQUEST STARTED ===");
-     const { fullName, email, phoneNumber, bio, skills, location } = req.body;
-      const file = req.files.file?.originalname?.[0];
+      const { fullName, email, phoneNumber, bio, skills, location } = req.body;
+     const filesName = req.files.file?.[0]?.originalname  || null;
+      const coverPictureName  =  req.files.coverPicture?.[0]?.originalname  || null;
+      const profilePictureName = req.files.profilePicture?.[0]?.originalname || null;
       const files = req.files.file?.[0];
+    
+     let cloudinaryResponses = [];
       const coverPicture = req.files?.coverPicture?.[0];
-      const profilePicture = req.files?.coverPicture?.[0];
+      const profilePicture = req.files?.profilePicture?.[0];
       const fileuri = getUrlData(files);
+      console.log(files);
+      console.log(profilePicture);
+      console.log(coverPicture);
       const coverPictureuri = getUrlData(coverPicture);
       const profilePictureuri = getUrlData(profilePicture);
-      const cloudinaryResponses = await cloudinaryuploadFilesParallel([
-        fileuri,
-        coverPictureuri,
-        profilePictureuri,
-      ]);
-   // cloudinary usage is herer
+      // Only upload files that exist
+    const filesToUpload = [];
+    if (fileuri) filesToUpload.push(fileuri);
+    if (coverPictureuri) filesToUpload.push(coverPictureuri);
+    if (profilePictureuri) filesToUpload.push(profilePictureuri);
+
+    if (filesToUpload.length > 0) {
+       cloudinaryResponses = await cloudinaryuploadFilesParallel(filesToUpload);
+    }
+      // cloudinary usage is herer
       let skillsArray;
       if (skills) {
         skillsArray = skills.split(",");
@@ -217,39 +228,31 @@ class UserController {
           success: false,
         });
       }
-       console.log("\nUpdating user fields...");
+      console.log("\nUpdating user fields...");
       if (fullName) user.fullName = fullName;
       if (email) user.email = email;
       if (phoneNumber) user.phoneNumber = phoneNumber;
       if (bio) user.profile.bio = bio;
       if (location) user.profile.location = location;
       if (skills) user.profile.skills = skillsArray;
-      if (file) user.profile.fileOriginalName = file;
-      if (files) user.profile.file = cloudinaryResponses[0]?.secure_url;
-      if (coverPicture)
-        user.profile.coverPicture =
-          cloudinaryResponses[1]?.secure_url;
-      if (profilePicture)
-        user.profile.profilePicture = cloudinaryResponses[2]?.secure_url;
-      // if (files && cloudinaryResponses?.files) {
-      //   user.profile.file = cloudinaryResponses?.files?.secure_url;
-      //   console.log(user.profile.file);
-      //   console.log(cloudinaryResponses?.files?.secure_url);
-      //   console.log('Cover picture URL:', cloudinaryResponses?.coverPicture?.secure_url);
-      // }
-      // if (coverPicture && cloudinaryResponses?.coverPicture) {
-      //   user.profile.coverPicture = cloudinaryResponses?.coverPicture?.secure_url;
-      //   console.log(user.profile.coverPicture);
-      //   console.log(cloudinaryResponses?.coverPicture?.secure_url);
-      //   console.log('Cover picture URL:', cloudinaryResponses?.coverPicture?.secure_url);
-      // }
-
-      // if (profilePicture && cloudinaryResponses?.profilePicture) {
-      //   user.profile.profilePicture = cloudinaryResponses?.profilePicture?.secure_url;
-      //   console.log(user.profile.profilePicture);
-      //   console.log(cloudinaryResponses?.profilePicture?.secure_url);
-      //   console.log('Profile picture URL:', cloudinaryResponses?.profilePicture?.secure_url);
-      // }
+      if(filesName) user.profile.fileOriginalName = filesName;
+      if (coverPictureName) user.profile.coverPictureName = coverPictureName;
+      if (profilePictureName)  user.profile.profilePictureName = profilePictureName;
+      // if (file) user.profile.fileOriginalName = file;
+      if (filesToUpload.length > 0) {
+        let responseIndex = 0;
+        if (fileuri) {
+          user.profile.fileOriginalName = cloudinaryResponses[responseIndex]?.secure_url;
+          responseIndex++;
+        }
+        if (coverPictureuri) {
+          user.profile.coverPicture = cloudinaryResponses[responseIndex]?.secure_url;
+          responseIndex++;
+        }
+        if (profilePictureuri) {
+          user.profile.profilePicture = cloudinaryResponses[responseIndex]?.secure_url;
+        }
+      }
 
       console.log("\nSaving updated user...");
       await user.save();

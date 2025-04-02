@@ -3,12 +3,11 @@ import { useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'sonner';
-import { useDispatch, useSelector } from 'react-redux';
+import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
-import {setLoading} from "../redux/slice/authslice.js"
-import {setUser} from "../redux/slice/authslice.js"
-
+import { setLoading } from "../redux/slice/authslice.js";
+import { setUser } from "../redux/slice/authslice.js";
 
 const Login = () => {
   const [IsCompany, SetIsCompany] = useState(true);
@@ -19,8 +18,7 @@ const Login = () => {
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {loading} = useSelector(store=> store.auth)
-  
+  const { loading } = useSelector((store) => store.auth);
 
   const handleCompany = (e) => {
     e.preventDefault();
@@ -46,24 +44,24 @@ const Login = () => {
 
     try {
       dispatch(setLoading(true));
-      const res = await axios.post(`http://localhost:8000/api/user/login`, formData, {
-        headers: { "Content-Type": "application/json"},
-        withCredentials: true,
-      });
-      
-      if(res?.data?.success == true){
-        dispatch(setUser(res.data.user))
-        toast.success(res?.data?.message)
-        navigate('/user/profile')
+      const res = await axios.post(
+        `http://localhost:8000/api/user/login`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (res?.data?.success == true) {
+        dispatch(setUser(res.data.user));
+        toast.success(res?.data?.message);
+        navigate("/");
       }
-       
-      
-      
     } catch (error) {
-    toast.error(error?.response?.data?.message)
-      
+      toast.error(error?.response?.data?.message);
     } finally {
-      dispatch(setLoading(false))
+      dispatch(setLoading(false));
     }
   };
 
@@ -131,18 +129,26 @@ const Login = () => {
                 required
               />
             </div>
-{!loading ? ( <><button 
-              type="submit"
-              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
-            >
-              Login as Company
-            </button>  </>   ) : (<><button 
-              type="submit"
-              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
-            >
-              Processing...<Loader2 className="mr-2 w-4 h-4 animate-spin" />
-            </button>  </> )}
-          
+            {!loading ? (
+              <>
+                <button
+                  type="submit"
+                  className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+                >
+                  Login as Company
+                </button>{" "}
+              </>
+            ) : (
+              <>
+                <button
+                  type="submit"
+                  className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+                >
+                  Processing...
+                  <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                </button>{" "}
+              </>
+            )}
           </form>
         ) : (
           <form onSubmit={submithandler} className="p-2 w-[50%] bg-white">
@@ -186,17 +192,26 @@ const Login = () => {
                 required
               />
             </div>
-            {!loading ? ( <><button 
-              type="submit"
-              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
-            >
-              Login as Student
-            </button>  </>   ) : (<><button 
-              type="submit"
-              className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
-            >
-              Processing...<Loader2 className="mr-2 w-4 h-4 animate-spin" />
-            </button>  </> )}
+            {!loading ? (
+              <>
+                <button
+                  type="submit"
+                  className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+                >
+                  Login as Student
+                </button>{" "}
+              </>
+            ) : (
+              <>
+                <button
+                  type="submit"
+                  className="w-full flex justify-evenly items-center gap-2 bg-indigo-500 text-white py-2 rounded"
+                >
+                  Processing...
+                  <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                </button>{" "}
+              </>
+            )}
           </form>
         )}
 

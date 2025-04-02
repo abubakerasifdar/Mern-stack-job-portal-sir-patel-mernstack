@@ -19,7 +19,10 @@ const UserSchema = new mongoose.Schema(
       company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
       profilePicture: { type: String, default: "" },
       location:{type:String},
-      coverPicture:{type:String, default:""}
+      coverPicture:{type:String, default:""},
+      profilePictureName: {type:String},
+      coverPictureName: {type:String},
+      fileName:{type:String}
     },
 
   },

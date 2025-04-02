@@ -41,7 +41,7 @@ class Application {
       job.applications.push(newApplication._id);
       await job.save();
       return res.json({
-        mesasge: "job applied successfully",
+        message: "job applied successfully",
         success: true,
       });
     } catch (error) {

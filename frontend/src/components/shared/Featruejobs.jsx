@@ -1,10 +1,22 @@
 import React from "react";
 import { Img } from "react-image";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import store from "./../redux/store.js";
+
 const jobs = [1, 2, 3, 4];
 const Featruejobs = () => {
+  const {user} = useSelector((store)=> store.auth)
+  const { AllJobs } = useSelector((store) => store.job);
   const navigate = useNavigate();
-  const jobId = "23402304";
+const dayagefunction = (mongodbtime) => {
+    const createdAt = new Date(mongodbtime);
+    const currentDate = new Date();
+    const timeDifference = currentDate - createdAt;
+    return Math.floor(timeDifference / (1000 * 24 * 60 * 60)); // For MongoDB extended JSON
+
+    // For regular ISO strings
+  };
   return (
     <>
       {/* 5 Features Jobs section start */}
@@ -24,8 +36,11 @@ const Featruejobs = () => {
           </div>
         </div>
         <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 py-4">
-          {jobs.map((items, index) => (
-            <div className="grid grid-cols gap-4 border p-3 border-b-slate-300">
+          {AllJobs.map((job) => (
+            <div
+              key={job._id}
+              className="grid grid-cols gap-4 border p-3 border-b-slate-300"
+            >
               <div className="flex flex-row justify-between items-center">
                 <Img
                   src="/images/Company Logo/Property 1=Revolut.png"
@@ -33,44 +48,51 @@ const Featruejobs = () => {
                   height={60}
                 />
                 <div className="border border-[#4640DE] p-1 text-[#4640DE]">
-                  Full Time
+                  {job?.jobType}
                 </div>
               </div>
 
               <div className="font-bold ">
-                Email Marketing <br />
-                <span className="font-light">Revolut . Madrid, Spain</span>{" "}
+                {job?.applications?.length}
+                <br />
+                Job created at :{dayagefunction(job?.createdAt)} day ago <br />
+                {job?.title} <br />
+                <span className="font-light">
+                  {job?.company?.name}, {job?.location}
+                </span>{" "}
               </div>
+
               <div>
-                Recolute is looking for Email Marketing to help teams
-                managers...
+                Job Salary: {job?.salary} <br />
+                {job?.description}
               </div>
               <div className="flex flex-row gap-4">
                 <div className="bg-[#eb86333d] p-2 font-bold rounded-3xl text-[#EB8533]">
-                  Marketing
+                  Position: {job?.position}
                 </div>
                 <div className="bg-[#56cdad3f] p-2 font-bold rounded-3xl text-[#56cdad]">
-                  Design
+                  Experience: {job?.experience}
                 </div>
               </div>
 
               <div className="flex justify-between">
-              <div
-                onClick={() => navigate(`/jobdesc/${jobId}`)}
-                className="bg-[#4640DE]   text-center flex w-auto text-white items-center justify-center p-2 font-bold "
-              >
-                Save For Later 
-              </div><div
-                onClick={() => navigate(`/jobdesc/${jobId}`)}
-                className="bg-[#4640DE]   text-center flex w-auto text-white items-center justify-center p-2 font-bold "
-              >
-                More Details ...
-              </div>
+                <div
+                  onClick={() => navigate(`/jobdesc/${job._id}`)}
+                  className="bg-[#4640DE]   text-center flex w-auto text-white items-center justify-center p-2 font-bold "
+                >
+                  Save For Later
+                </div>
+                <div
+                  onClick={() => navigate(`/jobdesc/${job._id}`)}
+                  className="bg-[#4640DE]   text-center flex w-auto text-white items-center justify-center p-2 font-bold "
+                >
+                  More Details ...
+                </div>
               </div>
             </div>
           ))}
 
-          <div className="grid grid-cols gap-4 border p-3 border-b-slate-300">
+          {/* <div className="grid grid-cols gap-4 border p-3 border-b-slate-300">
             <div className="flex flex-row justify-between items-center">
               <Img
                 src="/images/Company Logo/Property 1=Dropbox.png"
@@ -255,7 +277,7 @@ const Featruejobs = () => {
                 Technology
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
       {/* Feature Jos section ended */}

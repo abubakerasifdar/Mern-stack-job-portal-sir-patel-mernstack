@@ -2,10 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 import cloudinary from './cloudinary.js';
 
-const cloudinaryuploadFilesParallel = async (files) => {
+const cloudinaryuploadFilesParallel = async (filesToUpload) => {
     // Create array of upload promises
     try{
-        const uploadPromises = files.map(file => 
+        const uploadPromises = filesToUpload.map(file => 
             cloudinary.uploader.upload(file.content, {
               resource_type: "auto",
               folder: "user_uploads"

@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 const isAuthenticated = async (req, res, next) => {
   try {
     const token = req.cookies.token;
-
+    
     if (!token) {
       return res.status(200).json({
         message: "No token provided!",

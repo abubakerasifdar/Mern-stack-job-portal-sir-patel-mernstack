@@ -1,8 +1,92 @@
 import React from "react";
 import { Img } from "react-image";
 import Navbar from "@/components/shared/Navbar";
+import { useParams } from "react-router-dom";
+import { setSingleJobs } from "../redux/slice/jobslice";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
+
 export default function Jobdesc() {
-  const isApplied = false;
+  const { loading } = useSelector((store) => store.auth);
+  const { user } = useSelector((store) => store.auth);
+  const { SingleJobs } = useSelector((store) => store.job);
+  const InitialAppliedState =
+    SingleJobs?.applications?.some(
+      (application) => application?.applicant?._id == user?._id
+    ) || false;
+  const [isApplied, setIsApplied] = useState(InitialAppliedState);
+
+  const dispatch = useDispatch();
+  const params = useParams();
+  const jobId = params.id;
+  const dayagefunction = (mongodbtime) => {
+    const createdAt = new Date(mongodbtime);
+    const currentDate = new Date();
+    const timeDifference = currentDate - createdAt;
+    return Math.floor(timeDifference / (1000 * 24 * 60 * 60));
+  };
+  const applyJobHandler = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:8000/api/application/apply/${jobId}`,
+        {
+          header: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (data?.success) {
+        setIsApplied(true); // update the local state
+
+        const UpdateSingleJob = {
+          ...SingleJobs,
+          applications: [...SingleJobs.applications, { applicant: user?._id }],
+        };
+
+        dispatch(setSingleJobs(UpdateSingleJob));
+
+        return toast.success(data.message);
+      }
+    } catch (error) {
+      return toast.error(error?.response?.data?.message);
+
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    const fetchSingleJob = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8000/api/job/get/${jobId}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (data.success) {
+          toast.success(data?.message);
+          const jobsetapplyupdateer = data.job.applications.some(
+            (application) => application.applicant?._id == user?._id
+          );
+          setIsApplied(jobsetapplyupdateer);
+          // ensure astate is async with fresh data
+          dispatch(setSingleJobs(data.job));
+          // pakara gia mujrim or bug ya tang kar raha ha saron ko
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.log("Error in Effect");
+        }
+        console.log("Error in Effect");
+      }
+    };
+    fetchSingleJob();
+  }, [jobId, dispatch, user?._id]);
   return (
     <div>
       <Navbar />
@@ -51,10 +135,11 @@ export default function Jobdesc() {
                 {/* content details  */}
                 <div className="flex w-full flex-col justify-start">
                   <div className="text-3xl font-[1000] ">
-                    Social Media Assistant
+                    {SingleJobs?.title}
                   </div>
                   <a href="#" className="text-[#515B6F] font-bold">
-                    Stripe . Paris, France . Full-Time
+                    {SingleJobs?.company?.name} . {SingleJobs?.location} .{" "}
+                    {SingleJobs?.jobType}
                   </a>
                 </div>
               </div>
@@ -70,12 +155,15 @@ export default function Jobdesc() {
                   className="hidden lg:flex "
                 />
 
-<button 
-  className={`lg:flex px-6 py-3 ${isApplied ? 'bg-gray-600' : 'bg-[#4640DE]'} text-white font-bold text-center`}
-  disabled={isApplied}
->
-  {isApplied ? "Already Applied" : "Apply Now"}
-</button>
+                <button
+                  onClick={isApplied ? null : applyJobHandler}
+                  className={`lg:flex px-6 py-3 ${
+                    isApplied ? "bg-gray-600" : "bg-[#4640DE]"
+                  } text-white font-bold text-center`}
+                  disabled={isApplied}
+                >
+                  {isApplied ? "Already Applied" : "Apply Now"}
+                </button>
               </div>
             </div>
           </div>
@@ -87,13 +175,7 @@ export default function Jobdesc() {
         <div className="flex flex-2 basis-2/3 flex-col gap-y-4">
           <div className="flex flex-col gap-y-4">
             <h1 className="text-3xl font-[1000] ">Description</h1>
-            <p>
-              Stripe is looking for Social Media Marketing expert to help manage
-              our online networks. You will be responsible for monitoring our
-              social media channels, creating content, finding effective ways to
-              engage the community and incentivize others to engage on our
-              channels.
-            </p>
+            <p>{SingleJobs?.description}</p>
           </div>
           <hr className="lg:hidden" />
           {/* Responsibilites section */}
@@ -246,6 +328,20 @@ export default function Jobdesc() {
               <p>Fluent in English </p>
             </div>
           </div>
+          <div className="flex flex-col gap-y-4">
+            <h1 className="text-3xl font-[1000] ">
+              Competative Salary You Get
+            </h1>
+            <div className="flex gap-4">
+              <Img
+                src="/images/SVG-Icons/Name=Circle Check.svg"
+                height={24}
+                width={24}
+                alt="Circle Check"
+              />
+              <p>{SingleJobs?.salary} Rs/month</p>
+            </div>
+          </div>
         </div>
         {/* side bar section  */}
         <div className="flex flex-1 basis-1/3 flex-col space-y-8  w-full  lg:px-5">
@@ -254,7 +350,10 @@ export default function Jobdesc() {
             <h1 className="text-3xl font-[1000] text-start">About this role</h1>
             <div className="flex flex-col p-3 bg-[#F8F8FD] gap-3">
               <p>
-                <span className="font-bold">5 Applied</span> of Capacity
+                <span className="font-bold">
+                  {SingleJobs?.applications?.length} Applied
+                </span>{" "}
+                of Capacity {SingleJobs?.position}
               </p>
               <div className="bg-[#D6DDEB] w-[100%] p-0 ">
                 <div className="bg-[#56CDAD] w-[70%] p-1"></div>
@@ -262,8 +361,13 @@ export default function Jobdesc() {
             </div>
             <div className="flex gap-4 flex-col">
               <div className="flex justify-between">
-                <p>Apply Before</p>
-                <h5 className="font-bold">31 July, 2025</h5>
+                <p>Created At</p>
+                <h5 className="font-bold">
+                  {SingleJobs?.createdAt.split("T")?.[0]} ,{" "}
+                  {dayagefunction(SingleJobs?.createdAt) == 0
+                    ? "Today"
+                    : `${dayagefunction(SingleJobs?.createdAt)} Days Ago`}{" "}
+                </h5>
               </div>
               <div className="flex justify-between">
                 <p>Apply Before</p>
@@ -284,7 +388,7 @@ export default function Jobdesc() {
             <h1 className="text-3xl font-[1000] text-start">About this role</h1>
             <div className="flex flex-row  p-3  gap-2">
               <div className="px-3 rounded-3xl py-2 bg-black text-white">
-                Marketing
+                Experience: {SingleJobs?.experience}
               </div>
               <div className="px-3 rounded-3xl py-2 bg-black text-white">
                 Marketing

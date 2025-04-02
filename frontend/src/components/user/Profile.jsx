@@ -4,7 +4,10 @@ import Dashboardheader from "./../shared/Dashboardheader";
 import Dashboardsidebar from "./../shared/Dashboardsidebar";
 import Profilecontentsection from "./../shared/profilecontentsection";
 
+
+
 const Profile = () => {
+ 
   return (
     <div>
       <div className="flex bg-white">
