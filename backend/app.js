@@ -15,7 +15,8 @@ import applicationRoutes from "./routes/application.js"
 const app = express();
 const PORT = process.env.PORT || 8000;
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "http://job-portal-mern-stack-project.app.vercel",
+  methods: ["POST" , "GET"],
   credentials: true,
 };
 const DATABASE_URL = process.env.DATABASE_URL;
